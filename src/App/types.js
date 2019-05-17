@@ -1,0 +1,2 @@
+export const GET_FILE_PATHS = "GET_FILE_PATHS";
+export const SET_SAMPLERATE = "SET_SAMPLERATE";

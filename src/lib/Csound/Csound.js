@@ -4,6 +4,8 @@ import React from "react";
 export const CsoundContext = React.createContext({});
 const setControlChannelInit = [];
 const readScoreInit = [];
+const compileOrcInit = [];
+
 export class Csound extends React.Component {
     constructor(props) {
         super(props);
@@ -20,34 +22,44 @@ export class Csound extends React.Component {
     };
 
     startCsound = async () => {
-        await CsoundObj.importScripts("https://waaw.csound.com/js/");
-        const result = await fetch(this.props.csd);
-        const csdText = await result.text();
-        const csoundObj = new CsoundObj();
-        csoundObj.compileCSD(csdText);
+        try {
+            await CsoundObj.importScripts("https://waaw.csound.com/js/");
+            const result = await fetch(this.props.csd);
+            const csdText = await result.text();
+            const csoundObj = new CsoundObj();
+            csoundObj.compileCSD(csdText);
 
-        if (Array.isArray(this.props.preloadFiles)) {
-            await Promise.all(
-                this.props.preloadFiles.map(async ({ path, name }) => {
-                    return await this.uploadFile(path, name, csoundObj);
-                })
-            );
+            if (Array.isArray(this.props.preloadFiles)) {
+                await Promise.all(
+                    this.props.preloadFiles.map(async ({ path, name }) => {
+                        return await this.uploadFile(path, name, csoundObj);
+                    })
+                );
+            }
+
+            this.setState({ csoundObj }, () => {
+                csoundObj.start();
+                Array.isArray(setControlChannelInit) &&
+                    setControlChannelInit.map(e => {
+                        csoundObj.setControlChannel(e.key, e.value);
+                        return null;
+                    });
+
+                Array.isArray(readScoreInit) &&
+                    readScoreInit.map(e => {
+                        csoundObj.readScore(e);
+                        return null;
+                    });
+
+                Array.isArray(compileOrcInit) &&
+                    compileOrcInit.map(e => {
+                        csoundObj.compileOrc(e);
+                        return null;
+                    });
+            });
+        } catch (e) {
+            console.log(e);
         }
-
-        this.setState({ csoundObj }, () => {
-            csoundObj.start();
-            Array.isArray(setControlChannelInit) &&
-                setControlChannelInit.map(e => {
-                    csoundObj.setControlChannel(e.key, e.value);
-                    return null;
-                });
-
-            Array.isArray(readScoreInit) &&
-                readScoreInit.map(e => {
-                    csoundObj.readScore(e);
-                    return null;
-                });
-        });
     };
 
     start = () => {
@@ -70,6 +82,9 @@ export class Csound extends React.Component {
                       },
                       readScore: score => {
                           readScoreInit.push(score);
+                      },
+                      compileOrc: orc => {
+                          compileOrcInit.push(orc);
                       }
                   }
                 : {
@@ -77,7 +92,11 @@ export class Csound extends React.Component {
                       setControlChannel: (channel, value) => {
                           csoundObj.setControlChannel(channel, value);
                       },
-                      readScore: scoreString => csoundObj.readScore(scoreString)
+                      readScore: scoreString =>
+                          csoundObj.readScore(scoreString),
+                      compileOrc: orc => {
+                          csoundObj.compileOrc(orc);
+                      }
                   };
 
         return (

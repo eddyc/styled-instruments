@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { instr } from "../../lib/Csound/Instrument";
 
 const Saw = instr("Saw")`
-   aOut vco2 ${({ test }) => test}, ${props => props.freq}
+   aOut vco2 ${{ kAmp: v => v * 5 }}, ${{ kFreq: v => v * 5 }}
    aOut2 vco2 ${({ test }) => test}, 440
    outs(aOut, aOut) 
 `;

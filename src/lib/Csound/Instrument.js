@@ -15,8 +15,15 @@ export const instr = label => (strs, ...exprs) => {
         };
 
         getExpressionGetters() {
-            const filtered = exprs.filter(expr => typeof expr === "function");
-            return filtered.map(expr => {
+            const filteredFunctions = exprs.filter(
+                expr => typeof expr === "function"
+            );
+            const filteredObjects = exprs.filter(
+                expr => typeof expr === "object"
+            );
+            console.log(filteredObjects);
+
+            return filteredFunctions.map(expr => {
                 let value = this.getExpressionLabel(expr);
                 value = `${value} chnget "${value}"\n`;
                 return { [value]: value };
@@ -53,13 +60,13 @@ export const instr = label => (strs, ...exprs) => {
             return result;
         }
 
-        componentDidUpdate(prevProps) {
-            if (prevProps !== this.props) {
-                this.setState({
-                    instrument: this.interpolate(exprs)
-                });
-            }
-        }
+        // componentDidUpdate(prevProps) {
+        //     if (prevProps !== this.props) {
+        //         this.setState({
+        //             instrument: this.interpolate(exprs)
+        //         });
+        //     }
+        // }
         render() {
             return (
                 <CsoundContext.Consumer>
@@ -69,6 +76,7 @@ export const instr = label => (strs, ...exprs) => {
                                 <IOComponent
                                     context={rest}
                                     instrument={this.state.instrument}
+                                    {...this.props}
                                 />
                             );
                         }
@@ -80,13 +88,27 @@ export const instr = label => (strs, ...exprs) => {
 };
 
 class IOComponent extends React.Component {
+    constructor(props) {
+        super(props);
+        const { instrument, context } = props;
+        const { compileOrc } = context;
+        compileOrc(instrument);
+    }
+
+    componentDidUpdate(prevProps) {
+        const { context, instrument, ...restProps } = prevProps;
+        for (const index in restProps) {
+            if (restProps[index] !== this.props[index]) {
+                console.log(index, this.props[index], "-->", restProps[index]);
+            }
+        }
+    }
+
     getInput = key => {
         return `k${key} chnget "${key}`;
     };
 
     render() {
-        console.log(this.props.instrument);
-
         return null;
     }
 }

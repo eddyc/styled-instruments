@@ -3,9 +3,11 @@ import { hot } from "react-hot-loader/root";
 import { connect } from "react-redux";
 import { instr } from "../../lib/Csound/Instrument";
 
+const kAmp = { kAmp: v => v };
+const kFreq = { kFreq: v => v * 100 };
+// const kOut = v => ({ kOut: v });
 const Saw = instr("Saw")`
-   aOut vco2 ${{ kAmp: v => v * 5 }}, ${{ kFreq: v => v * 5 }}
-   aOut2 vco2 ${({ test }) => test}, 440
+   aOut vco2 ${kAmp}, ${kFreq}
    outs(aOut, aOut) 
 `;
 
@@ -22,7 +24,7 @@ class Main extends React.Component {
                         this.setState({ number: number + 1 });
                     }}
                 />
-                <Saw test={this.state.number} freq={440} />
+                {/* <Saw kFreq={this.state.number * 100} kAmp={0.5} /> */}
             </>
         );
     }

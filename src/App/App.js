@@ -1,5 +1,5 @@
 import React from "react";
-import { Csound } from "../lib/Csound/Csound";
+import Csound from "../lib/Csound";
 import Main from "../containers/Main/Main";
 import MainCsd from "../csound/main.csd";
 import { connect } from "react-redux";

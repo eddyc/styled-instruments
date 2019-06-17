@@ -133,19 +133,22 @@ export const instr = label => (strs, ...exprs) => {
 
         render() {
             return (
-                <CsoundContext.Consumer>
-                    {({ ready, ...rest }) => {
-                        if (ready) {
-                            return (
-                                <IOComponent
-                                    context={rest}
-                                    instrument={this.state.instrument}
-                                    {...this.props}
-                                />
-                            );
-                        }
-                    }}
-                </CsoundContext.Consumer>
+                <>
+                    <CsoundContext.Consumer>
+                        {({ ready, ...rest }) => {
+                            if (ready) {
+                                return (
+                                    <IOComponent
+                                        context={rest}
+                                        instrument={this.state.instrument}
+                                        {...this.props}
+                                    />
+                                );
+                            }
+                        }}
+                    </CsoundContext.Consumer>
+                    {this.props.children(42)}
+                </>
             );
         }
     };

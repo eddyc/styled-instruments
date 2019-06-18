@@ -4,10 +4,10 @@ import { connect } from "react-redux";
 import { instr } from "../../lib/Instrument";
 
 const kFreq = { kFreq: v => v * 100 };
-const kOut = v => ({ kOut: v });
+const kOut = v => ({ kOut: parseInt(v * 50 + 50) });
 const Saw = instr("Saw")`
    aOut vco2 0.2, ${kFreq}
-   ${kOut} lfo 1, 1
+   ${kOut} lfo 1, 0.1
    outs(aOut, aOut)
 `;
 

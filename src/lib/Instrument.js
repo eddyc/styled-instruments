@@ -33,11 +33,12 @@ export const instr = label => (strs, ...exprs) => {
                 this.props.readScore(`i "Saw" 0 -1`);
 
                 Object.keys(this.state.ioFunctions.output).map(e => {
+                    const f = this.state.ioFunctions.output[e];
                     this.props.setOutputChannelCallback(
                         e,
                         throttle(v => {
-                            this.setState({ ...this.state, [e]: v });
-                        }, 1 / (60 * 0.001))
+                            this.setState({ [e]: f(v) });
+                        }, 1000 / 60)
                     );
                 });
             }
